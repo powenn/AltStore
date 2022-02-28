@@ -1,0 +1,23 @@
+name: Build AltStore.ipa
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - uses: actions/checkout@v2
+      - name: submodules-init
+        uses: snickerbockers/submodules-init@v4
+      - name: Build
+        run: |
+          git submodule update --init --recursive
+          carthage update
+          chmod +x ./compile.command
+          /bin/bash -c ./compile.command
+      - name: Upload AltStore.ipa.zip
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: "AltStore.ipa"
+          path: "AltStore.ipa"
